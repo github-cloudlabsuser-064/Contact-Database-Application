@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webAppName": {
+            "type": "string"
+        },
+        "sqlServerName": {
+            "type": "string"
+        },
+        "sqlDatabaseName": {
+            "type": "string"
+        },
+        "storageAccountName": {
+            "type": "string"
+        },
+        "appInsightsName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('webAppName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "serverFarmId": "/subscriptions/70c764a8-fd5a-4ffc-a095-3c4bd413aa85/resourceGroups/GitHub-Copilot-Challenges/providers/Microsoft.Web/serverfarms/CRUDapplication220240424122344Plan"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2018-06-01-preview",
+            "name": "[parameters('sqlServerName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "administratorLogin": "odl_user_1307938@azurehol3502.onmicrosoft.com",
+                "administratorLoginPassword": "pzcr93NHK*jr"
+            },
+            "resources": [
+                {
+                    "type": "databases",
+                    "apiVersion": "2018-06-01-preview",
+                    "name": "[parameters('sqlDatabaseName')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                    ],
+                    "properties": {}
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2018-05-01-preview",
+            "name": "[parameters('appInsightsName')]",
+            "location": "[resourceGroup().location]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        }
+    ]
+}
+
